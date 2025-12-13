@@ -1,29 +1,18 @@
 CAM_HEIGHT = float(input("Enter camera height from floor (m): "))
 TILT_ANGLE = float(input("Enter camera tilt angle in degrees: "))
 FOV = float(input("Enter camera vertical FOV in degrees: "))
-
-# height_estimator_methodB.py
 import cv2
 import math
 from ultralytics import YOLO
 
-# -----------------------
-# CAMERA CONFIG (REAL VALUES REQUIRED)
-# -----------------------
-CAM_HEIGHT = 2.8        # meters
-CAM_TILT = 25.0         # degrees downward
-VERTICAL_FOV = 45.0     # degrees
+CAM_HEIGHT = 2.8        
+CAM_TILT = 25.0         
+VERTICAL_FOV = 45.0     
 
-# -----------------------
-# ONE-TIME CALIBRATION
-# -----------------------
-REF_HEIGHT = 1.70        # meters
-REF_DISTANCE = 3.0       # meters
-REF_BBOX_PIXELS = 420    # pixels (measure once)
+REF_HEIGHT = 1.70       
+REF_DISTANCE = 3.0      
+REF_BBOX_PIXELS = 420   
 
-# -----------------------
-# HELPER FUNCTIONS
-# -----------------------
 def pixel_to_angle(y_pixel, frame_height):
     dy = y_pixel - (frame_height / 2)
     return (dy / frame_height) * VERTICAL_FOV
@@ -39,9 +28,7 @@ def estimate_height(head_y, bbox_pixel_height, frame_height):
     height = CAM_HEIGHT - D * math.tan(total_angle)
     return max(height, 0)
 
-# -----------------------
-# YOLO + CAMERA
-# -----------------------
+
 yolo = YOLO("yolov8n.pt")
 cap = cv2.VideoCapture(0)
 
@@ -74,4 +61,5 @@ while True:
         break
 
 cap.release()
+
 cv2.destroyAllWindows()
