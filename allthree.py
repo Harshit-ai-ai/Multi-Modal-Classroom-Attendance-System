@@ -3,10 +3,6 @@ import math
 import numpy as np
 from ultralytics import YOLO
 import mediapipe as mp
-
-# =========================
-# USER INPUT (ONE TIME)
-# =========================
 print("=== Camera & Calibration Setup ===")
 
 CAM_HEIGHT = float(input("Enter camera height from floor (meters): "))
@@ -17,10 +13,6 @@ REF_DISTANCE = float(input("Enter reference person distance from camera (meters)
 REF_BBOX_PIXELS = float(input("Enter reference bounding box height in pixels: "))
 
 print("\nCalibration complete. Starting system...\n")
-
-# =========================
-# INIT MODELS
-# =========================
 yolo = YOLO("yolov8n.pt")
 
 mp_pose = mp.solutions.pose
@@ -29,10 +21,6 @@ pose = mp_pose.Pose(min_detection_confidence=0.5,
                      min_tracking_confidence=0.5)
 
 cap = cv2.VideoCapture(0)
-
-# =========================
-# HELPER FUNCTIONS
-# =========================
 def pixel_to_angle(y_pixel, frame_height):
     dy = y_pixel - (frame_height / 2)
     return (dy / frame_height) * VERTICAL_FOV
@@ -51,18 +39,12 @@ def calculate_angle(a, b):
     x1, y1 = a
     x2, y2 = b
     return np.degrees(np.arctan2(y2 - y1, x2 - x1))
-
-# =========================
-# MAIN LOOP
-# =========================
 while cap.isOpened():
     ret, frame = cap.read()
     if not ret:
         break
 
     h, w = frame.shape[:2]
-
-    # ---------- YOLO PERSON DETECTION ----------
     results = yolo(frame, stream=True)
 
     for r in results:
@@ -81,7 +63,6 @@ while cap.isOpened():
                         cv2.FONT_HERSHEY_SIMPLEX, 0.6,
                         (255,255,0), 2)
 
-    # ---------- MEDIAPIPE POSE ----------
     rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     rgb.flags.writeable = False
     pose_result = pose.process(rgb)
@@ -112,7 +93,6 @@ while cap.isOpened():
             mp_pose.POSE_CONNECTIONS
         )
 
-    # ---------- DISPLAY ----------
     cv2.imshow("Smart Classroom Vision", frame)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -120,3 +100,4 @@ while cap.isOpened():
 
 cap.release()
 cv2.destroyAllWindows()
+
